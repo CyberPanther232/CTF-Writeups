@@ -1,6 +1,7 @@
+
 # TryHackMe Write-up: Stolen Mount
 
-![Logo](https://github.com/CyberPanther232/CTF-Writeups/blob/7dc6598b260327dca6220bd4bf0f0df276de0f35/logo.png)
+[imgsrc=&#34;https://github.com/CyberPanther232/CTF-Writeups/blob/7dc6598b260327dca6220bd4bf0f0df276de0f35/logo.png?raw=true&#34;alt=&#34;Logo&#34;width=&#34;200&#34;/](imgsrc=%22https://github.com/CyberPanther232/CTF-Writeups/blob/7dc6598b260327dca6220bd4bf0f0df276de0f35/logo.png?raw=true%22alt=%22Logo%22width=%22200%22/)
 
 - By CyberPanther232
 
@@ -25,29 +26,35 @@ This was an easy 30 minute room that requires knowledge of Wireshark and NFS to 
 ## Filtering
 
 First, as with most packet analysis, I applied a filter to only show NFS traffic. I filter via NFS because of the description in the room stating that this data was stolen from an NFS Server.
-![Image](https://github.com/CyberPanther232/CTF-Writeups/blob/7dc6598b260327dca6220bd4bf0f0df276de0f35/THM%20CTFs/Stolen%20Mount%20CTF/screenshots/nfs-filter.png)
+
+<imgsrc="https://github.com/CyberPanther232/CTF-Writeups/blob/7dc6598b260327dca6220bd4bf0f0df276de0f35/THM%20CTFs/Stolen%20Mount%20CTF/screenshots/nfs-filter.png?raw=true"alt="NFS Filter in Wireshark">
 
 After applying the 'nfs' filter, I then began to look into the packets to see if I could identify any particular strings that would show evidence of the "classified" data.
 
 I noticed in some of the strings that the NFS is a Linux Server and that the "attacker" was trying to gain access to the NFS share to extract the secret data. Which they ultimately accomplished. In the screenshot below you can see the attacker is using Kali Linux to connect to the server which is using NFSv4.2.
 
+<imgsrc="https://github.com/CyberPanther232/CTF-Writeups/blob/7dc6598b260327dca6220bd4bf0f0df276de0f35/THM%20CTFs/Stolen%20Mount%20CTF/screenshots/os-string.png?raw=true"alt="OS String in Wireshark">
 
-![Image](https://github.com/CyberPanther232/CTF-Writeups/blob/7dc6598b260327dca6220bd4bf0f0df276de0f35/THM%20CTFs/Stolen%20Mount%20CTF/screenshots/os-string.png)
-
-![Image](https://github.com/CyberPanther232/CTF-Writeups/blob/7dc6598b260327dca6220bd4bf0f0df276de0f35/THM%20CTFs/Stolen%20Mount%20CTF/screenshots/info-gathering.png)
+<imgsrc="https://github.com/CyberPanther232/CTF-Writeups/blob/7dc6598b260327dca6220bd4bf0f0df276de0f35/THM%20CTFs/Stolen%20Mount%20CTF/screenshots/info-gathering.png?raw=true"alt="Info Gathering in Wireshark">
 
 ## Following TCP Stream
 
 Once I gathered some preliminary information I then decided to follow the TCP stream of the entire session which was created. After scrolling through the stream I found some interesting strings.
 
-![Image](https://github.com/CyberPanther232/CTF-Writeups/blob/7dc6598b260327dca6220bd4bf0f0df276de0f35/THM%20CTFs/Stolen%20Mount%20CTF/screenshots/hidden_stash.png)
+<imgsrc="https://github.com/CyberPanther232/CTF-Writeups/blob/7dc6598b260327dca6220bd4bf0f0df276de0f35/THM%20CTFs/Stolen%20Mount%20CTF/screenshots/hidden_stash.png?raw=true"alt="Hidden Stash string in TCP Stream">
 
 ```
+
 Strings Found:
+
 - creds.txt
+
 - desktop
+
 - Archive Password
+
 - ******************************** (md5) - Hidden because I can't make it too eazy ;)
+
 ```
 
 It appears that I found a password hash for an archive file. I made not of this hash and continued my investigation and I stumbled upon a string "hidden_stash.zip"
@@ -64,7 +71,7 @@ In order to extract this data from Wireshark I first needed to change the TCP st
 
 Once I extracted the raw data I ran the file command to identify the file type as you can see in the screenshot below. Once I saw the "compressed" keyword I knew that I could potentially decompress or unzip the data. I did and was prompted to enter a password for "secrets.png"!
 
-![Image](https://github.com/CyberPanther232/CTF-Writeups/blob/7dc6598b260327dca6220bd4bf0f0df276de0f35/THM%20CTFs/Stolen%20Mount%20CTF/screenshots/unzip.png)
+<imgsrc="https://github.com/CyberPanther232/CTF-Writeups/blob/7dc6598b260327dca6220bd4bf0f0df276de0f35/THM%20CTFs/Stolen%20Mount%20CTF/screenshots/unzip.png?raw=true"alt="Unzip command prompt">
 
 ## 3. Crack the Hash!
 
@@ -77,13 +84,14 @@ Password found: Wouldn't you like to know ;)
 ```
 
 I have cracked the hash and got the password! Now time to enter the password and unzip this archive!
-![Image](https://github.com/CyberPanther232/CTF-Writeups/blob/7dc6598b260327dca6220bd4bf0f0df276de0f35/THM%20CTFs/Stolen%20Mount%20CTF/screenshots/view-image.png)
+
+<imgsrc="https://github.com/CyberPanther232/CTF-Writeups/blob/7dc6598b260327dca6220bd4bf0f0df276de0f35/THM%20CTFs/Stolen%20Mount%20CTF/screenshots/view-image.png?raw=true"alt="Viewing the extracted image">
 
 ## 4. Unzip and Extract the Data from the Image!
 
 I whipped out my phone and scanned the QR code show in the "secrets.png" file. It's below!
 
-![Image](https://github.com/CyberPanther232/CTF-Writeups/blob/7dc6598b260327dca6220bd4bf0f0df276de0f35/THM%20CTFs/Stolen%20Mount%20CTF/screenshots/secret.png)
+<imgsrc="https://github.com/CyberPanther232/CTF-Writeups/blob/7dc6598b260327dca6220bd4bf0f0df276de0f35/THM%20CTFs/Stolen%20Mount%20CTF/screenshots/secret.png?raw=true"alt="Secret QR Code"width="150"/>
 
 And then I typed out the flag to get my answer!
 
