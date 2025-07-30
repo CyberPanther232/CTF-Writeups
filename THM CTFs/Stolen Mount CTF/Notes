@@ -82,7 +82,6 @@ Summary:
 
 ## Tools Used
 
-* **Nmap:** Port scanning and service enumeration.
-* **GoBuster:** Web directory brute-forcing.
-* **Netcat:** Setting up a listener for the reverse shell.
-* **[Add any other tools you used]**
+* **Wireshark:** Packet Analysis and Data Extraction.
+* **Unzip:** Decompress archives.
+* **Open-Source Tools** - crackstation.net, qrcode reader
