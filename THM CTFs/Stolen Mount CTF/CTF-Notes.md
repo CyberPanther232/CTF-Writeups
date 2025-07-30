@@ -81,7 +81,8 @@ I have cracked the hash and got the password! Now time to enter the password and
 I whipped out my phone and scanned the QR code show in the "secrets.png" file. It's below!
 
 <img src="https://github.com/CyberPanther232/CTF-Writeups/blob/7dc6598b260327dca6220bd4bf0f0df276de0f35/THM%20CTFs/Stolen%20Mount%20CTF/screenshots/secret.png?raw=true" alt="Secret QR Code" width="150"/>
-
+  - Note: If you're not reading this walkthrough have fun with this Rick Roll LOL.
+    
 And then I typed out the flag to get my answer!
 
 ---
