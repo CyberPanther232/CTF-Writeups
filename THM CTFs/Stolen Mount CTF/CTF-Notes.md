@@ -1,11 +1,13 @@
 # TryHackMe Write-up: Stolen Mount
 
 ![Logo](https://github.com/CyberPanther232/CTF-Writeups/blob/7dc6598b260327dca6220bd4bf0f0df276de0f35/logo.png)
-- CyberPanther232
+
+- By CyberPanther232
 
 ---
 
 ### **Room Details**
+
 * **Name:** Stolen Mount
 * **URL:** https://tryhackme.com/room/hfb1stolenmount
 * **Difficulty:** Easy
@@ -15,7 +17,6 @@
 ## Synopsis
 
 This was an easy 30 minute room that requires knowledge of Wireshark and NFS to complete.
-*(Example: This challenge involved exploiting a web application vulnerability to gain an initial foothold, followed by escalating privileges by taking advantage of misconfigured SUID binaries on the system.)*
 
 ---
 
@@ -29,6 +30,7 @@ First, as with most packet analysis, I applied a filter to only show NFS traffic
 After applying the 'nfs' filter, I then began to look into the packets to see if I could identify any particular strings that would show evidence of the "classified" data.
 
 I noticed in some of the strings that the NFS is a Linux Server and that the "attacker" was trying to gain access to the NFS share to extract the secret data. Which they ultimately accomplished. In the screenshot below you can see the attacker is using Kali Linux to connect to the server which is using NFSv4.2.
+
 
 ![Image](https://github.com/CyberPanther232/CTF-Writeups/blob/7dc6598b260327dca6220bd4bf0f0df276de0f35/THM%20CTFs/Stolen%20Mount%20CTF/screenshots/os-string.png)
 
@@ -47,6 +49,7 @@ Strings Found:
 - Archive Password
 - ******************************** (md5) - Hidden because I can't make it too eazy ;)
 ```
+
 It appears that I found a password hash for an archive file. I made not of this hash and continued my investigation and I stumbled upon a string "hidden_stash.zip"
 
 This is probably the archive that has the secret contents. I should probably crack the hash and get the password in case I need to extract and view the archive.
@@ -65,7 +68,8 @@ Once I extracted the raw data I ran the file command to identify the file type a
 
 ## 3. Crack the Hash!
 
-Now that I knew I needed the password from the hash found previously, I went online to **https://crackstation.net** to try and crack the hash! 
+Now that I knew I needed the password from the hash found previously, I went online to **https://crackstation.net** to try and crack the hash!
+
 ```
 
 Password found: Wouldn't you like to know ;)
@@ -88,7 +92,7 @@ And then I typed out the flag to get my answer!
 Summary:
 
 * **NFS is Not Secure** - This protocol does not have encryption meaning anyone can read the data in a session if they are listening.
-* **What did you learn?** Using file sharing with secure passwords and encrypted data transmission is a must. Also, I learned that NFS session data can be saved to recover downloaded and transferred files.
+* **What did you learn?** Using file sharing with secure passwords and encrypted data transmission is a must. Also, I learned that NFS session data can be saved to recover downloaded and transferred files from packet captures.
 * **How could this be prevented?** By updating to the latest version of NFS or just using a different file sharing platform with encryption and use better passwords.
 
 ---
