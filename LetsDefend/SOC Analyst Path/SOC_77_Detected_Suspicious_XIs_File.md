@@ -25,6 +25,8 @@ Initial triage conclusion: the malicious attachment was not blocked, so this cas
 
 ## Endpoint Security Analysis
 
+![image](https://github.com/CyberPanther232/CTF-Writeups/blob/524b69cb7b7e65abe48e108655150607f8b84321/LetsDefend/SOC%20Analyst%20Path/Screenshots/Screenshot%202026-04-06%20204029.png)
+
 In the Endpoint Security (EDR) command-line telemetry, a suspicious PowerShell command was executed with mixed-case obfuscation and a shortened encoded argument:
 
 1. `POwersheLL` casing variation: often used to evade simple pattern-based detections.
