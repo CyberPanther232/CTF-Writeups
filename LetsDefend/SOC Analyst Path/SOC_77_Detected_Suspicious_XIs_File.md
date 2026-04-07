@@ -93,7 +93,7 @@ From the Email Security panel, a matching filename was observed in an allowed me
 
 | Field | Value |
 | --- | --- |
-| From | jack@avenatech.io |
+| From | jack[@]avenatech[.]io |
 | To | nolan@letsdefend.io |
 | Subject | Order Sheet and Specifications |
 | Date | Apr 10, 2023, 08:30 AM |
