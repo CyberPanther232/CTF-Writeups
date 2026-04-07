@@ -27,14 +27,6 @@ Initial assessment: this is high risk because the payload was allowed and not qu
 
 ## Walkthrough Steps
 
-<<<<<<< HEAD
-### Step 1: Review the Alert Metadata
-=======
-![image](https://github.com/CyberPanther232/CTF-Writeups/blob/524b69cb7b7e65abe48e108655150607f8b84321/LetsDefend/SOC%20Analyst%20Path/Screenshots/Screenshot%202026-04-06%20204029.png)
-
-In the Endpoint Security (EDR) command-line telemetry, a suspicious PowerShell command was executed with mixed-case obfuscation and a shortened encoded argument (Hit the CommandLine tab, then hit the magnifying glass):
->>>>>>> 2b9e4eb97c21131478d31f8efba85839b3591346
-
 Action:
 
 1. Open the alert details and collect all core fields.
@@ -50,6 +42,10 @@ Analyst decision:
 - Treat as potentially active compromise and continue triage immediately.
 
 ### Step 2: Validate Endpoint Execution Activity
+
+![image](https://github.com/CyberPanther232/CTF-Writeups/blob/524b69cb7b7e65abe48e108655150607f8b84321/LetsDefend/SOC%20Analyst%20Path/Screenshots/Screenshot%202026-04-06%20204029.png)
+
+In the Endpoint Security (EDR) command-line telemetry, a suspicious PowerShell command was executed with mixed-case obfuscation and a shortened encoded argument (Hit the CommandLine tab, then hit the magnifying glass):
 
 Action:
 
@@ -129,8 +125,6 @@ Action:
 1. Isolate/contain host `Sofia` in EDR immediately.
 2. Prevent further beaconing and data exfiltration.
 
-![image](https://github.com/CyberPanther232/CTF-Writeups/blob/cf830fdd2e53ef10a1e73b14f15e6d945a847297/LetsDefend/SOC%20Analyst%20Path/Screenshots/Screenshot%202026-04-06%20215311.png)
-
 No direct web download evidence was found for the initial XLSM from the affected endpoint logs. A likely delivery path is email.
 
 1. Malicious XLSM was allowed.
@@ -138,6 +132,8 @@ No direct web download evidence was found for the initial XLSM from the affected
 3. C2 traffic is observed.
 
 ### Step 7: Investigate Initial Access (RCA)
+
+![image](https://github.com/CyberPanther232/CTF-Writeups/blob/cf830fdd2e53ef10a1e73b14f15e6d945a847297/LetsDefend/SOC%20Analyst%20Path/Screenshots/Screenshot%202026-04-06%20215311.png)
 
 Action:
 
