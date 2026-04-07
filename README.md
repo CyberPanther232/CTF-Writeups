@@ -24,38 +24,27 @@ It contains structured walkthroughs from platforms like TryHackMe and LetsDefend
 
 Use this index to quickly find completed walkthroughs.
 
-| # | Platform | Walkthrough | Difficulty | Focus Area | Status | Link |
-| --- | --- | --- | --- | --- | --- | --- |
-| 1 | LetsDefend | SOC138 - Detected Suspicious XLS File | Medium | SOC Alert Triage, PowerShell Malware Analysis, IOC Extraction | Completed | [Open](LetsDefend/SOC%20Analyst%20Path/SOC_77_Detected_Suspicious_XIs_File.md) |
-| 2 | TryHackMe | Stolen Mount | Easy | Wireshark, NFS Traffic Analysis, Data Extraction | Completed | [Open](THM%20CTFs/Stolen%20Mount%20CTF/CTF-Notes.md) |
+| # | Platform   | Walkthrough                           | Difficulty | Focus Area                                                    | Status    | Link                                                                        |
+| - | ---------- | ------------------------------------- | ---------- | ------------------------------------------------------------- | --------- | --------------------------------------------------------------------------- |
+| 1 | LetsDefend | SOC138 - Detected Suspicious XLS File | Medium     | SOC Alert Triage, PowerShell Malware Analysis, IOC Extraction | Completed | [Open](LetsDefend/SOC%20Analyst%20Path/SOC_77_Detected_Suspicious_XIs_File.md) |
+| 2 | TryHackMe  | Stolen Mount                          | Easy       | Wireshark, NFS Traffic Analysis, Data Extraction              | Completed | [Open](THM%20CTFs/Stolen%20Mount%20CTF/CTF-Notes.md)                           |
 
 ## Quick Navigation
 
 - [LetsDefend Walkthroughs](LetsDefend/)
 - [TryHackMe Walkthroughs](THM%20CTFs/)
 
-## Walkthrough Format Standard
-
-Each walkthrough should include:
-
-1. Challenge or alert context
-2. Investigation or exploitation workflow
-3. Key findings and technical evidence
-4. Indicators, artifacts, or flags
-5. Final summary and lessons learned
-
-## Add a New Walkthrough to the Index
-
-After creating a new walkthrough file, add one row to the table above using this template:
-
-| # | Platform | Walkthrough | Difficulty | Focus Area | Status | Link |
-| --- | --- | --- | --- | --- | --- | --- |
-| X | PlatformName | Walkthrough Title | Easy/Medium/Hard | Primary skills or techniques | Completed/In Progress | [Open](relative/path/to/writeup.md) |
-
-Tip: Keep entries short and consistent so the index stays readable as the repository grows.
-
 ## Author
 
 CyberPanther232
 
 If this repository helps your learning, consider starring it.
+
+## Other Links
+
+Building practical, real-world defensive security skills through continuous labs, investigations, and documentation.
+
+- 🌐 Professional Portfolio: https://www.cyberpanther-dev.space
+- 💼 LinkedIn: https://www.linkedin.com/in/hunter-kinney
+- 🧠 Hack The Box Profile: https://profile.hackthebox.com/profile/019d0cb7-b1fb-71b8-9e52-537f07ca884a
+- 🛡️ LetsDefend Profile: https://app.letsdefend.io/user/CyberSniper232
