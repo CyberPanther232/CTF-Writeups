@@ -105,13 +105,9 @@ Defanged URLs:
 
 ### Step 5: Confirm Outbound Communication in Logs
 
-<<<<<<< HEAD
-Action:
-=======
 ![image](https://github.com/CyberPanther232/CTF-Writeups/blob/cf830fdd2e53ef10a1e73b14f15e6d945a847297/LetsDefend/SOC%20Analyst%20Path/Screenshots/Screenshot%202026-04-06%20204121.png)
 
 Using the source host IP (`172.16.17.56`) on the alert date, logs show outbound communication with an external destination and suspicious encrypted-looking payload content (`{Data: }`).
->>>>>>> 2b9e4eb97c21131478d31f8efba85839b3591346
 
 1. Open Log Management for the same date and source IP `172.16.17.56`.
 2. Filter for outbound events and suspicious raw payloads.
@@ -133,13 +129,9 @@ Action:
 1. Isolate/contain host `Sofia` in EDR immediately.
 2. Prevent further beaconing and data exfiltration.
 
-<<<<<<< HEAD
-Containment rationale:
-=======
 ![image](https://github.com/CyberPanther232/CTF-Writeups/blob/cf830fdd2e53ef10a1e73b14f15e6d945a847297/LetsDefend/SOC%20Analyst%20Path/Screenshots/Screenshot%202026-04-06%20215311.png)
 
 No direct web download evidence was found for the initial XLSM from the affected endpoint logs. A likely delivery path is email.
->>>>>>> 2b9e4eb97c21131478d31f8efba85839b3591346
 
 1. Malicious XLSM was allowed.
 2. Obfuscated PowerShell executed.
@@ -183,21 +175,3 @@ RCA hypothesis:
 | Email Sender | jack[@]avenatech[.]io | Potential phishing source |
 | File Hash (MD5) | 7ccf88c0bbe3b29bf19d877c4596a8d | Malicious attachment hash |
 | Attachment Name | ORDER SHEET & SPEC.xlsm | Initial payload filename |
-
-## Recommended SOC Actions
-
-<<<<<<< HEAD
-1. Block confirmed C2 IP and all extracted domains at firewall/proxy controls.
-2. Run environment-wide IOC sweep for hash, filename, sender, and destination IP.
-3. Hunt for Office-to-PowerShell process chains and encoded command patterns.
-4. Reimage affected endpoint(s) if persistence or secondary payload execution is suspected.
-5. Tune detections for mixed-case PowerShell, `-EncodedCommand`, and suspicious `DownloadFile` usage.
-=======
-![image](https://github.com/CyberPanther232/CTF-Writeups/blob/cf830fdd2e53ef10a1e73b14f15e6d945a847297/LetsDefend/SOC%20Analyst%20Path/Screenshots/Screenshot%202026-04-06%20215307.png)
-
-1. Block all listed domains and the confirmed C2 IP at network controls.
-2. Search environment-wide for the MD5 and filename to identify additional impacted hosts.
-3. Hunt for parent-child process chains involving Office spawning PowerShell.
-4. Quarantine and reimage affected endpoint(s) as needed.
-5. Add detections for encoded PowerShell, mixed-case bypass patterns, and suspicious `DownloadFile` usage.
->>>>>>> 2b9e4eb97c21131478d31f8efba85839b3591346
