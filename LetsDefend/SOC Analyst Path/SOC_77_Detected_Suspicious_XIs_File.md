@@ -27,7 +27,7 @@ Initial triage conclusion: the malicious attachment was not blocked, so this cas
 
 ![image](https://github.com/CyberPanther232/CTF-Writeups/blob/524b69cb7b7e65abe48e108655150607f8b84321/LetsDefend/SOC%20Analyst%20Path/Screenshots/Screenshot%202026-04-06%20204029.png)
 
-In the Endpoint Security (EDR) command-line telemetry, a suspicious PowerShell command was executed with mixed-case obfuscation and a shortened encoded argument:
+In the Endpoint Security (EDR) command-line telemetry, a suspicious PowerShell command was executed with mixed-case obfuscation and a shortened encoded argument (Hit the CommandLine tab, then hit the magnifying glass):
 
 1. `POwersheLL` casing variation: often used to evade simple pattern-based detections.
 2. `-ENCOD`: short form of `-EncodedCommand`, commonly used to run base64 payloads.
@@ -63,6 +63,8 @@ The decoded script reveals classic dropper behavior:
 
 ## Log Management Findings
 
+![image](https://github.com/CyberPanther232/CTF-Writeups/blob/cf830fdd2e53ef10a1e73b14f15e6d945a847297/LetsDefend/SOC%20Analyst%20Path/Screenshots/Screenshot%202026-04-06%20204121.png)
+
 Using the source host IP (`172.16.17.56`) on the alert date, logs show outbound communication with an external destination and suspicious encrypted-looking payload content (`{Data: }`).
 
 Confirmed C2 destination:
@@ -82,6 +84,8 @@ Rationale:
 3. Outbound communication to suspected C2 is present.
 
 ## Root Cause Analysis (RCA) Hypothesis
+
+![image](https://github.com/CyberPanther232/CTF-Writeups/blob/cf830fdd2e53ef10a1e73b14f15e6d945a847297/LetsDefend/SOC%20Analyst%20Path/Screenshots/Screenshot%202026-04-06%20215311.png)
 
 No direct web download evidence was found for the initial XLSM from the affected endpoint logs. A likely delivery path is email.
 
@@ -106,6 +110,8 @@ Although the email timestamp differs from the original alert timeline, it suppor
 
 ## Artifacts and IOCs
 
+![image](https://github.com/CyberPanther232/CTF-Writeups/blob/cf830fdd2e53ef10a1e73b14f15e6d945a847297/LetsDefend/SOC%20Analyst%20Path/Screenshots/Screenshot%202026-04-06%20222854.png)
+
 | Type | Value | Notes |
 | --- | --- | --- |
 | C2 IP | 177[.]53[.]143[.]89 | Destination seen in suspicious outbound traffic |
@@ -114,6 +120,8 @@ Although the email timestamp differs from the original alert timeline, it suppor
 | Attachment Name | ORDER SHEET & SPEC.xlsm | Initial payload filename |
 
 ## Recommended Follow-Up Actions
+
+![image](https://github.com/CyberPanther232/CTF-Writeups/blob/cf830fdd2e53ef10a1e73b14f15e6d945a847297/LetsDefend/SOC%20Analyst%20Path/Screenshots/Screenshot%202026-04-06%20215307.png)
 
 1. Block all listed domains and the confirmed C2 IP at network controls.
 2. Search environment-wide for the MD5 and filename to identify additional impacted hosts.
