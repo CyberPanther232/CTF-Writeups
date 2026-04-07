@@ -1,12 +1,14 @@
-# LetsDefend Monitoring Alert SOC138 - Detected Suspicious XLS File
-
-## Walkthrough
+# LetsDefend Walkthrough: SOC138 - Detected Suspicious XLS File
 
 Author: CyberPanther232
 
 <img src="https://github.com/CyberPanther232/CTF-Writeups/blob/7dc6598b260327dca6220bd4bf0f0df276de0f35/logo.png?raw=true" alt="Logo" width="200"/>
 
-## Alert Overview
+## Objective
+
+Investigate alert SOC138, confirm whether compromise occurred, extract IOCs, and identify probable initial access.
+
+## Scenario Snapshot
 
 | Field | Value |
 | --- | --- |
@@ -21,35 +23,71 @@ Author: CyberPanther232
 | File Size | 2.66 MB |
 | Device Action | Allowed |
 
-Initial triage conclusion: the malicious attachment was not blocked, so this case should be treated as an active compromise until proven otherwise.
+Initial assessment: this is high risk because the payload was allowed and not quarantined.
 
-## Endpoint Security Analysis
+## Walkthrough Steps
 
-In the Endpoint Security (EDR) command-line telemetry, a suspicious PowerShell command was executed with mixed-case obfuscation and a shortened encoded argument:
+### Step 1: Review the Alert Metadata
 
-1. `POwersheLL` casing variation: often used to evade simple pattern-based detections.
-2. `-ENCOD`: short form of `-EncodedCommand`, commonly used to run base64 payloads.
+Action:
 
-### Why this matters
+1. Open the alert details and collect all core fields.
+2. Note the source host, file name, hash, and device action.
 
-Encoded PowerShell can be legitimate, but in this context it is suspicious due to obfuscation, downloader behavior, and external network communication.
+What to look for:
 
-### Decoding tip
+- Malicious file type (`.xlsm` macro-enabled Office file).
+- Security control result (`Allowed` instead of blocked).
 
-PowerShell encoded commands are typically UTF-16. If you decode in CyberChef, remove null bytes to make the output readable.
+Analyst decision:
 
-## Key Behavioral Findings from Decoded Script
+- Treat as potentially active compromise and continue triage immediately.
 
-The decoded script reveals classic dropper behavior:
+### Step 2: Validate Endpoint Execution Activity
 
-1. Creates a web client object (`New-Object Net.WebClient`) to make outbound HTTP requests.
-2. Forces TLS 1.2 (`ServicePointManager.SecurityProtocol = TLS12`) for secure transport.
-3. Builds and splits a list of multiple external URLs.
-4. Iterates through those URLs in a `foreach` loop.
-5. Attempts to `DownloadFile` an executable into the user profile path.
-6. Executes the downloaded payload via `Win32_Process.Create` if size checks pass.
+Action:
 
-### Defanged URLs observed in script
+1. Open Endpoint Security (EDR) for host `Sofia`.
+2. Inspect command-line history around alert timestamp.
+3. Look for PowerShell with encoded or obfuscated arguments.
+
+Evidence found:
+
+1. Mixed-case `POwersheLL` command usage.
+2. `-ENCOD` (short form of `-EncodedCommand`).
+
+Why this matters:
+
+- Mixed-case and encoded execution are common evasion techniques in malicious scripting.
+
+### Step 3: Decode and Triage the PowerShell Payload
+
+Action:
+
+1. Decode the base64 command in a safe analysis tool (for example, CyberChef).
+2. If output appears broken, account for UTF-16 encoding and remove null bytes.
+3. Focus on behavior first, not full beautification.
+
+Key decoded behaviors:
+
+1. `New-Object Net.WebClient` is used for outbound web requests.
+2. TLS is forced (`ServicePointManager.SecurityProtocol = TLS12`).
+3. A URL list is built and split into multiple candidates.
+4. A `foreach` loop attempts `DownloadFile` from each URL.
+5. Downloaded executable is launched via `Win32_Process.Create` when size threshold is met.
+
+Analyst decision:
+
+- Classify as downloader/dropper behavior with execution intent.
+
+### Step 4: Extract Network IOCs from Script
+
+Action:
+
+1. Pull all external URLs referenced by the decoded script.
+2. Defang the URLs before documentation.
+
+Defanged URLs:
 
 1. hxxp[:]//tudorinvest[.]com/wp-admin/rGtnUb5f/
 2. hxxp[:]//dp-womenbasket[.]com/wp-admin/Li/
@@ -59,31 +97,44 @@ The decoded script reveals classic dropper behavior:
 6. hxxp[:]//bodyinnovation[.]co[.]za/wp-content/2ssHvi/
 7. hxxp[:]//nomadco[.]es/wp-admin/MvwVHCG/
 
-## Log Management Findings
+### Step 5: Confirm Outbound Communication in Logs
 
-Using the source host IP (`172.16.17.56`) on the alert date, logs show outbound communication with an external destination and suspicious encrypted-looking payload content (`{Data: }`).
+Action:
 
-Confirmed C2 destination:
+1. Open Log Management for the same date and source IP `172.16.17.56`.
+2. Filter for outbound events and suspicious raw payloads.
 
-- `177[.]53[.]143[.]89`
+Evidence found:
 
-This indicates successful command-and-control communication, not just blocked attempts.
+1. Successful external communication from endpoint.
+2. Destination IP: `177[.]53[.]143[.]89` over port `443`.
+3. Raw payload contains encrypted-looking data (`{Data: ...}`).
 
-## Containment Decision
+Analyst decision:
 
-Contain the host immediately.
+- This is not just an attempted infection; C2 communication likely succeeded.
 
-Rationale:
+### Step 6: Contain the Endpoint
 
-1. Malicious macro-enabled file was allowed.
-2. Obfuscated PowerShell executed successfully.
-3. Outbound communication to suspected C2 is present.
+Action:
 
-## Root Cause Analysis (RCA) Hypothesis
+1. Isolate/contain host `Sofia` in EDR immediately.
+2. Prevent further beaconing and data exfiltration.
 
-No direct web download evidence was found for the initial XLSM from the affected endpoint logs. A likely delivery path is email.
+Containment rationale:
 
-From the Email Security panel, a matching filename was observed in an allowed message:
+1. Malicious XLSM was allowed.
+2. Obfuscated PowerShell executed.
+3. C2 traffic is observed.
+
+### Step 7: Investigate Initial Access (RCA)
+
+Action:
+
+1. Check whether the file was downloaded directly from the web.
+2. If not found, pivot to Email Security for same filename/sender patterns.
+
+Email evidence observed:
 
 | Field | Value |
 | --- | --- |
@@ -93,14 +144,16 @@ From the Email Security panel, a matching filename was observed in an allowed me
 | Date | Apr 10, 2023, 08:30 AM |
 | Action | Allowed |
 
-Although the email timestamp differs from the original alert timeline, it supports a realistic and recurring phishing delivery pattern using the same lure filename.
+RCA hypothesis:
 
-## Incident Summary
+- The attachment was likely delivered via phishing email using the same lure naming pattern.
 
-1. Obfuscated, encoded PowerShell was executed on the endpoint.
-2. Endpoint behavior is consistent with malware dropper activity.
-3. Successful communication with an external C2 IP was observed.
-4. The host should be considered compromised and contained.
+## Final Analyst Conclusion
+
+1. Host executed obfuscated encoded PowerShell from a malicious Office context.
+2. Script behavior matches malware dropper/downloader tactics.
+3. External C2 communication occurred successfully.
+4. Host should be treated as compromised and handled through full IR workflow.
 
 ## Artifacts and IOCs
 
@@ -111,10 +164,10 @@ Although the email timestamp differs from the original alert timeline, it suppor
 | File Hash (MD5) | 7ccf88c0bbe3b29bf19d877c4596a8d | Malicious attachment hash |
 | Attachment Name | ORDER SHEET & SPEC.xlsm | Initial payload filename |
 
-## Recommended Follow-Up Actions
+## Recommended SOC Actions
 
-1. Block all listed domains and the confirmed C2 IP at network controls.
-2. Search environment-wide for the MD5 and filename to identify additional impacted hosts.
-3. Hunt for parent-child process chains involving Office spawning PowerShell.
-4. Quarantine and reimage affected endpoint(s) as needed.
-5. Add detections for encoded PowerShell, mixed-case bypass patterns, and suspicious `DownloadFile` usage.
+1. Block confirmed C2 IP and all extracted domains at firewall/proxy controls.
+2. Run environment-wide IOC sweep for hash, filename, sender, and destination IP.
+3. Hunt for Office-to-PowerShell process chains and encoded command patterns.
+4. Reimage affected endpoint(s) if persistence or secondary payload execution is suspected.
+5. Tune detections for mixed-case PowerShell, `-EncodedCommand`, and suspicious `DownloadFile` usage.
